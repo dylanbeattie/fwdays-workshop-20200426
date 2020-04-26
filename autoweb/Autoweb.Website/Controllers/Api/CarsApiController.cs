@@ -53,9 +53,16 @@ namespace Autoweb.Website.Controllers.Api {
         }
 
         [HttpPost]
-        public Car Post([FromBody] Car car) {
-            db.AddCar(car);
-            return car;
+        public IActionResult Post([FromBody] Car car) {
+            try {
+                db.AddCar(car);
+                return Redirect($"/api/cars/{car.RegistrationNumber}");
+            }
+            catch (DuplicateCarException ex) {
+                return Conflict(
+                    $"There is already a car with registration {ex.Car.RegistrationNumber} in the database!");
+            }
+
         }
 
         //// PUT: api/CarsApi/5

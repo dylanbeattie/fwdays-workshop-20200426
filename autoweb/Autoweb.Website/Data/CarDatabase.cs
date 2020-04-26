@@ -4,10 +4,10 @@ using System.Linq;
 using Autoweb.Website.Models;
 
 namespace Autoweb.Website.Data {
-	public class CarDatabase {
+    public class CarDatabase {
         private List<Car> cars = new List<Car>();
 
-		public IEnumerable<Car> Cars => cars;
+        public IEnumerable<Car> Cars => cars;
 
         /// <summary>
         /// Find the car with the specified registration. If the registration is not found, this method returns null.
@@ -19,6 +19,8 @@ namespace Autoweb.Website.Data {
         }
 
         public void AddCar(Car car) {
+            var existing = FindCar(car.RegistrationNumber);
+            if (existing != null) throw (new DuplicateCarException(car));
             cars.Add(car);
         }
 
@@ -47,4 +49,14 @@ namespace Autoweb.Website.Data {
             });
         }
     }
+    public class DuplicateCarException : Exception {
+        public Car Car { get; set; }
+
+        public DuplicateCarException(Car car) {
+            this.Car = car;
+        }
+
+    }
+
+
 }
