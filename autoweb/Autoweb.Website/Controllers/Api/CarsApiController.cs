@@ -28,7 +28,7 @@ namespace Autoweb.Website.Controllers.Api {
             var jsonCars = cars.Select(c => new {
                 _links = new {
                     model = new {
-                        href = $"/api/models/{c.Model.Code}"
+                        href = $"/api/models/{c.Model?.Code}"
                     }
                 },
                 registration = c.RegistrationNumber,
@@ -73,9 +73,9 @@ namespace Autoweb.Website.Controllers.Api {
                 RegistrationNumber = car.RegistrationNumber,
                 Year = car.Year,
                 Color = car.Color,
-                Make = car.Model.Make,
+                Make = car.Model?.Make,
                 NewCarAddedAtUtc = DateTime.UtcNow,
-                Model = car.Model.Name
+                Model = car.Model?.Name
             };
             await bus.PublishAsync<NewCarMessage>(message);
         }

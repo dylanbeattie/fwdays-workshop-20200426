@@ -12,4 +12,10 @@ namespace Autoweb.Messages {
         // Which dealer added this car?
         // What IP address did this car get added from?
     }
+
+    public class NewCarEmailMessage {
+        public string To { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+    }
 }
