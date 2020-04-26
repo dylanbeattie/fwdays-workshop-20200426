@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Autoweb.Messages;
 using Autoweb.Website.Data;
 using Autoweb.Website.Models;
+using EasyNetQ;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc;
 
@@ -12,10 +15,11 @@ namespace Autoweb.Website.Controllers.Api {
     [ApiController]
     public class CarsController : ControllerBase {
         private readonly CarDatabase db;
+        private readonly IBus bus;
 
-        public CarsController(CarDatabase db) {
+        public CarsController(CarDatabase db, IBus bus) {
             this.db = db;
-
+            this.bus = bus;
         }
 
         [HttpGet]
@@ -53,16 +57,27 @@ namespace Autoweb.Website.Controllers.Api {
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Car car) {
+        public async Task<IActionResult> Post([FromBody] Car car) {
             try {
-                db.AddCar(car);
+                db.AddCar(car) ;
+                await PublishNewCarMessage(car);
                 return Redirect($"/api/cars/{car.RegistrationNumber}");
             }
             catch (DuplicateCarException ex) {
-                return Conflict(
-                    $"There is already a car with registration {ex.Car.RegistrationNumber} in the database!");
+                return Conflict( $"There is already a car with registration {ex.Car.RegistrationNumber} in the database!");
             }
+        }
 
+        private async Task PublishNewCarMessage(Car car) {
+            var message = new NewCarMessage {
+                RegistrationNumber = car.RegistrationNumber,
+                Year = car.Year,
+                Color = car.Color,
+                Make = car.Model.Make,
+                NewCarAddedAtUtc = DateTime.UtcNow,
+                Model = car.Model.Name
+            };
+            await bus.PublishAsync<NewCarMessage>(message);
         }
 
         //// PUT: api/CarsApi/5
