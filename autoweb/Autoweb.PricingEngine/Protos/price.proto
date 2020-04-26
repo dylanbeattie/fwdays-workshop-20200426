@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "Autoweb.Pricing";
+
+service PricingEngine {
+	rpc GetPrice (PriceRequest) returns (PriceResponse);
+}
+
+message PriceRequest {
+	string make = 1;
+	string model = 2;
+	int32 year = 3;
+}
+
+message PriceResponse {
+	int32 price = 1;
+	string currency = 2;
+}
