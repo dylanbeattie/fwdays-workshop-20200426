@@ -6,6 +6,6 @@
 <h1 class="display-4">Cars</h1>
 <ul>
 @foreach(var car in Model) {
-    <li>@car.Model.Make @car.Model.Name (@car.Color, @car.Year)</li>
+    <li>@car.Model?.Make @car.Model?.Name (@car.Color, @car.Year)</li>
 }
 </ul>
